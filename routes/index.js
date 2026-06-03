@@ -25,4 +25,13 @@ router.get ('/register', authCtrl.showRegister);
 router.post('/register', authCtrl.register);
 router.get ('/profile',  authCtrl.requireLogin, authCtrl.showProfile);
 
+// Staff product management
+router.get('/staff/products', authCtrl.requireStaff, shopCtrl.staffListProducts);
+router.post('/staff/products', authCtrl.requireStaff, shopCtrl.staffCreateProduct);
+router.post('/staff/products/:id/update', authCtrl.requireStaff, shopCtrl.staffUpdateProduct);
+router.post('/staff/products/:id/delete', authCtrl.requireStaff, shopCtrl.staffDeleteProduct);
+
+// Staff order for customer
+router.post('/staff/order-for-customer', authCtrl.requireStaff, shopCtrl.staffOrderForCustomer);
+
 module.exports = router;

@@ -3,7 +3,8 @@ const Product  = require('../models/Product');
 const Category = require('../models/Category');
 const Cart     = require('../models/Cart');
 const Order    = require('../models/Order');
-
+// change
+const Account = require('../models/Account');
 function getCart(req) {
   return new Cart(req.session.cart || {});
 }
@@ -134,4 +135,67 @@ exports.placeOrder = (req, res) => {
   cart.clear();
   saveCart(req, cart);
   res.render('order-complete', { order, cartCount: 0 });
+};
+
+exports.staffListProducts = (req, res) => {
+  res.json(Product.getAll());
+};
+
+exports.staffCreateProduct = (req, res) => {
+  try {
+    const product = Product.add(req.body);
+    res.status(201).json(product);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.staffUpdateProduct = (req, res) => {
+  try {
+    const product = Product.update(req.params.id, req.body);
+    res.json(product);
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+};
+
+exports.staffDeleteProduct = (req, res) => {
+  try {
+    const product = Product.delete(req.params.id);
+    res.json(product);
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+};
+
+exports.staffOrderForCustomer = (req, res) => {
+  const cart = getCart(req);
+
+  if (cart.count === 0) {
+    return res.status(400).json({ error: 'Cart is empty.' });
+  }
+
+  const customer = Account.findByEmail(req.body.customerEmail);
+
+  if (!customer) {
+    return res.status(404).json({ error: 'Customer not found.' });
+  }
+
+  const order = {
+    id: 'ORD-' + Date.now(),
+    userId: customer.id,
+    email: customer.email,
+    items: cart.lines,
+    total: cart.total,
+    name: req.body.name || customer.name,
+    address: req.body.address || customer.address,
+    placedAt: new Date().toLocaleString('vi-VN'),
+    createdByStaffId: req.session.user.id,
+  };
+
+  Order.add(order);
+  cart.clear();
+  saveCart(req, cart);
+
+  res.status(201).json(order);
 };
