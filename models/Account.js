@@ -53,8 +53,12 @@ class Account {
     return Account.verifyPassword(password, user.passwordHash) ? user : null;
   }
 
-  static add({ name, email, password, address }) {
+  static add({ name, email, password, address, role = 'customer' }) {
     const normalizedEmail = String(email).trim().toLowerCase();
+    const allowedRoles = ['customer', 'staff'];
+if (!allowedRoles.includes(role)) {
+  throw new Error('Invalid role.');
+}
     if (!name || !normalizedEmail || !password || !address) {
       throw new Error('All fields are required.');
     }
@@ -69,7 +73,7 @@ class Account {
       email:        normalizedEmail,
       address:      String(address).trim(),
       passwordHash: Account.hashPassword(password),
-      role:         'customer',
+      role:         role,
       createdAt:    new Date().toISOString(),
     };
     accounts.push(newAccount);

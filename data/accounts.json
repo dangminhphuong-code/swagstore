@@ -1,1 +1,9 @@
-[]
+{
+  "id": 1,
+  "name": "Staff Demo",
+  "email": "staff@test.com",
+  "address": "Store",
+  "passwordHash": "...",
+  "role": "staff",
+  "createdAt": "2026-06-03T00:00:00.000Z"
+}

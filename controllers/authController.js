@@ -7,6 +7,8 @@ function getCart(req) {
   return new Cart(req.session.cart || {});
 }
 
+
+
 exports.requireLogin = (req, res, next) => {
   if (req.session.user) return next();
   res.redirect('/login?error=1');
@@ -99,4 +101,18 @@ exports.showProfile = (req, res) => {
     user:      req.session.user,
     cartCount: cart.count,
   });
+};
+
+
+// Thêm
+exports.requireStaff = (req, res, next) => {
+  if (!req.session.user) {
+    return res.redirect('/login?error=1');
+  }
+
+  if (req.session.user.role !== 'staff') {
+    return res.status(403).send('Forbidden: Staff only');
+  }
+
+  next();
 };
