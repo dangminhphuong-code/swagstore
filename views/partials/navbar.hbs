@@ -7,6 +7,9 @@
     <a href="/" class="nav-link">Shop</a>
     {{#if user}}
       <a href="/orders" class="nav-link">Orders</a>
+      {{#if (eq user.role 'staff')}}
+        <a href="/staff/order-for-customer" class="nav-link">Staff Order</a>
+      {{/if}}
       <span class="nav-link">Hi, {{user.name}}</span>
       <a href="/logout" class="nav-link">Logout</a>
     {{else}}

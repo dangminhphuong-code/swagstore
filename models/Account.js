@@ -10,7 +10,8 @@ function readAccounts() {
   try {
     const raw = fs.readFileSync(dataFile, 'utf8');
     const accounts = raw ? JSON.parse(raw) : [];
-    return Array.isArray(accounts) ? accounts : [];
+    if (Array.isArray(accounts)) return accounts;
+    return accounts && typeof accounts === 'object' ? [accounts] : [];
   } catch (_) {
     return [];
   }

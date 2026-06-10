@@ -1,1 +1,33 @@
-[]
+[
+  {
+    "id": "ORD-1781076474061",
+    "userId": 2,
+    "email": "customer@test.com",
+    "items": [
+      {
+        "product": {
+          "id": 3,
+          "name": "Sauce Labs Bolt T-Shirt",
+          "price": 15.99,
+          "image": "/images/bolt-shirt.svg",
+          "category": "Apparel",
+          "type": "T-Shirt",
+          "badge": "New",
+          "desc": "Get your testing power on. Super-soft 100% polyester, wrinkle-free."
+        },
+        "qty": 1,
+        "subtotal": 15.99
+      }
+    ],
+    "total": 17.27,
+    "name": "đấ",
+    "address": "đấ",
+    "placedAt": "14:27:54 10/6/2026",
+    "createdByStaffId": 1,
+    "createdByStaffEmail": "staff@test.com",
+    "createdByStaffName": "Staff Demo",
+    "staffOrder": true,
+    "createdAt": "2026-06-10T07:27:54.061Z",
+    "status": "confirmed"
+  }
+]

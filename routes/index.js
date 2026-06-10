@@ -32,6 +32,7 @@ router.post('/staff/products/:id/update', authCtrl.requireStaff, shopCtrl.staffU
 router.post('/staff/products/:id/delete', authCtrl.requireStaff, shopCtrl.staffDeleteProduct);
 
 // Staff order for customer
+router.get('/staff/order-for-customer', authCtrl.requireStaff, shopCtrl.showStaffOrderForCustomer);
 router.post('/staff/order-for-customer', authCtrl.requireStaff, shopCtrl.staffOrderForCustomer);
 
 module.exports = router;

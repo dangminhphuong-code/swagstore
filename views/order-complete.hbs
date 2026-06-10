@@ -3,6 +3,9 @@
     <div class="success-icon">✓</div>
     <h1 class="success-title">Thank you for your order!</h1>
     <p class="success-sub">Order <strong>{{order.id}}</strong> placed at {{order.placedAt}}</p>
+    {{#if staffMessage}}
+    <p class="success-sub"><strong>{{staffMessage}}</strong></p>
+    {{/if}}
     <p class="success-sub">Confirmation sent to <strong>{{order.email}}</strong></p>
 
     <div class="success-card">

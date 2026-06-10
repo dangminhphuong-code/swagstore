@@ -824,6 +824,22 @@ body {
 .form-input:focus { border-color: var(--accent); }
 .form-input::placeholder { color: var(--muted); }
 .form-textarea { resize: vertical; min-height: 80px; }
+.form-help {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 12px;
+  text-align: center;
+}
+.staff-alert {
+  margin-bottom: 24px;
+}
+.staff-cart-link {
+  margin-top: 20px;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
 
 .order-line {
   display: flex; justify-content: space-between;

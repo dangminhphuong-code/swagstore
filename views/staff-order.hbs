@@ -1,0 +1,69 @@
+<div class="page-container">
+  <div class="page-header">
+    <a href="/" class="back-link">Back to Shop</a>
+    <h1 class="page-title">Staff Order</h1>
+    <p class="page-subtitle">Create an order for an existing customer using the current cart.</p>
+  </div>
+
+  {{#if error}}
+  <div class="alert alert-error staff-alert">{{error}}</div>
+  {{/if}}
+
+  <div class="checkout-layout">
+    <form method="POST" action="/staff/order-for-customer" class="checkout-form">
+      <section class="form-section">
+        <h2 class="form-section-title">Customer</h2>
+        <div class="form-group">
+          <label class="form-label">Customer Email</label>
+          {{#if customers.length}}
+          <select name="customerEmail" class="form-input" required>
+            <option value="">Select customer</option>
+            {{#each customers}}
+            <option value="{{email}}" {{#if (eq email ../customerEmail)}}selected{{/if}}>{{name}} - {{email}}</option>
+            {{/each}}
+          </select>
+          {{else}}
+          <input type="email" name="customerEmail" class="form-input" placeholder="customer@example.com" value="{{customerEmail}}" required>
+          {{/if}}
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2 class="form-section-title">Shipping Override</h2>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="name" class="form-input" placeholder="Leave blank to use customer name" value="{{name}}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Address</label>
+          <textarea name="address" class="form-input form-textarea" placeholder="Leave blank to use customer address">{{address}}</textarea>
+        </div>
+      </section>
+
+      <button type="submit" class="btn-primary btn-full btn-large" {{#if empty}}disabled{{/if}}>Create Order for Customer</button>
+      {{#if empty}}
+      <p class="form-help">Add products to the cart before creating a staff order.</p>
+      {{/if}}
+    </form>
+
+    <aside class="checkout-summary">
+      <h2 class="summary-title">Current Cart</h2>
+      {{#if empty}}
+      <p class="summary-detail">No products in cart yet.</p>
+      <a href="/" class="btn-primary btn-full">Add Products</a>
+      {{else}}
+      {{#each lines}}
+      <div class="order-line">
+        <span class="order-line-name">{{product.name}} <span class="order-line-qty">x{{qty}}</span></span>
+        <span class="order-line-price">${{subtotal}}</span>
+      </div>
+      {{/each}}
+      <div class="summary-divider"></div>
+      <div class="summary-row"><span>Subtotal</span><span>${{subtotal}}</span></div>
+      <div class="summary-row"><span>Tax (8%)</span><span>${{tax}}</span></div>
+      <div class="summary-row summary-total"><span>Total</span><span>${{total}}</span></div>
+      <a href="/cart" class="btn-ghost btn-full staff-cart-link">Edit Cart</a>
+      {{/if}}
+    </aside>
+  </div>
+</div>

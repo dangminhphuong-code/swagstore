@@ -35,9 +35,9 @@ afterEach(() => {
 });
 
 // ── Helper: login agent ───────────────────────────────────────
-async function loginAgent(email, password) {
+async function loginAgent(email, password, role = 'customer') {
   const agent = request.agent(app);
-  Account.add({ name: 'Test', email, password, address: '1 St' });
+  Account.add({ name: 'Test', email, password, address: '1 St', role });
   await agent.post('/login').send(`email=${email}&password=${password}`);
   return agent;
 }
@@ -225,5 +225,50 @@ describe('Checkout & Order flow', () => {
     const res = await agent.get('/orders');
     expect(res.status).toBe(200);
     expect(res.text).toMatch(/ORD-/);
+  });
+});
+
+describe('Staff order for customer flow', () => {
+  test('GET /staff/order-for-customer blocks regular customers', async () => {
+    const agent = await loginAgent('regular@x.com', 'pass');
+
+    const res = await agent.get('/staff/order-for-customer');
+
+    expect(res.status).toBe(403);
+  });
+
+  test('staff can create an order for an existing customer', async () => {
+    const customer = Account.add({
+      name: 'Customer One',
+      email: 'customer1@x.com',
+      password: 'pass',
+      address: 'Customer Address',
+    });
+    const agent = await loginAgent('staff1@x.com', 'pass', 'staff');
+
+    await agent.post('/cart/add').send('productId=1');
+    const res = await agent
+      .post('/staff/order-for-customer')
+      .set('Accept', 'application/json')
+      .send('customerEmail=customer1@x.com&name=Customer+One&address=Customer+Address');
+
+    expect(res.status).toBe(201);
+    expect(res.body.email).toBe('customer1@x.com');
+    expect(res.body.createdByStaffId).toBeDefined();
+    expect(res.body.staffOrder).toBe(true);
+    expect(Order.getByUserId(customer.id)).toHaveLength(1);
+  });
+
+  test('staff order requires an existing customer account', async () => {
+    const agent = await loginAgent('staff2@x.com', 'pass', 'staff');
+    await agent.post('/cart/add').send('productId=1');
+
+    const res = await agent
+      .post('/staff/order-for-customer')
+      .set('Accept', 'application/json')
+      .send('customerEmail=missing@x.com');
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toMatch(/Customer not found/);
   });
 });

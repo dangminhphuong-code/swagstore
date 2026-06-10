@@ -11,6 +11,36 @@ function getCart(req) {
 function saveCart(req, cart) {
   req.session.cart = cart.toJSON();
 }
+function wantsHtml(req) {
+  return String(req.get('accept') || '').includes('text/html');
+}
+function getStaffOrderViewData(req, overrides = {}) {
+  const cart = getCart(req);
+  const customers = Account.getAll().filter(account => (account.role || 'customer') === 'customer');
+
+  return {
+    lines: cart.lines,
+    subtotal: cart.subtotal,
+    tax: cart.tax,
+    total: cart.total,
+    cartCount: cart.count,
+    empty: cart.count === 0,
+    customers,
+    ...overrides,
+  };
+}
+function staffOrderError(req, res, statusCode, message) {
+  if (wantsHtml(req)) {
+    return res.status(statusCode).render('staff-order', getStaffOrderViewData(req, {
+      error: message,
+      customerEmail: req.body.customerEmail || '',
+      name: req.body.name || '',
+      address: req.body.address || '',
+    }));
+  }
+
+  return res.status(statusCode).json({ error: message });
+}
 
 // GET /
 exports.showShop = (req, res) => {
@@ -168,17 +198,25 @@ exports.staffDeleteProduct = (req, res) => {
   }
 };
 
+exports.showStaffOrderForCustomer = (req, res) => {
+  res.render('staff-order', getStaffOrderViewData(req));
+};
+
 exports.staffOrderForCustomer = (req, res) => {
   const cart = getCart(req);
 
   if (cart.count === 0) {
-    return res.status(400).json({ error: 'Cart is empty.' });
+    return staffOrderError(req, res, 400, 'Cart is empty.');
   }
 
   const customer = Account.findByEmail(req.body.customerEmail);
 
   if (!customer) {
-    return res.status(404).json({ error: 'Customer not found.' });
+    return staffOrderError(req, res, 404, 'Customer not found.');
+  }
+
+  if ((customer.role || 'customer') !== 'customer') {
+    return staffOrderError(req, res, 400, 'Customer email must belong to a customer account.');
   }
 
   const order = {
@@ -191,11 +229,22 @@ exports.staffOrderForCustomer = (req, res) => {
     address: req.body.address || customer.address,
     placedAt: new Date().toLocaleString('vi-VN'),
     createdByStaffId: req.session.user.id,
+    createdByStaffEmail: req.session.user.email,
+    createdByStaffName: req.session.user.name,
+    staffOrder: true,
   };
 
-  Order.add(order);
+  const savedOrder = Order.add(order);
   cart.clear();
   saveCart(req, cart);
 
-  res.status(201).json(order);
+  if (wantsHtml(req)) {
+    return res.status(201).render('order-complete', {
+      order: savedOrder,
+      cartCount: 0,
+      staffMessage: `Staff order created for ${customer.email}`,
+    });
+  }
+
+  res.status(201).json(savedOrder);
 };

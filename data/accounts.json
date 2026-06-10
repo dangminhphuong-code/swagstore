@@ -1,9 +1,20 @@
-{
-  "id": 1,
-  "name": "Staff Demo",
-  "email": "staff@test.com",
-  "address": "Store",
-  "passwordHash": "...",
-  "role": "staff",
-  "createdAt": "2026-06-03T00:00:00.000Z"
-}
+[
+  {
+    "id": 1,
+    "name": "Staff Demo",
+    "email": "staff@test.com",
+    "address": "Store",
+    "passwordHash": "$2a$10$0Ie30H.sAJQeK5kgtNTzc.aoLWovIZN7/1iKJplxEmAUy0qk6VOHu",
+    "role": "staff",
+    "createdAt": "2026-06-03T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Customer Demo",
+    "email": "customer@test.com",
+    "address": "123 Customer Street, HCMC",
+    "passwordHash": "$2a$10$mru6kkHdsS50SUDD53EYt.SqM7BE8eB8w5s/03tFzSC2V26qYPv4C",
+    "role": "customer",
+    "createdAt": "2026-06-03T00:00:00.000Z"
+  }
+]
